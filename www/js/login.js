@@ -1,58 +1,58 @@
-import { ab2Base64 } from "./lib";
+import {
+  JWT_KEY,
+  SECRET_KEY_ONE_KEY,
+  SECRET_KEY_TWO_KEY,
+  readFileToString,
+} from "./lib.js";
 
-const keyForm = document.getElementById("keyForm");
-keyForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+const secretKeyForm = document.getElementById("secretKeyForm");
+secretKeyForm.addEventListener("submit", onSecretKeySubmit);
 
-  const data = new FormData(keyForm);
-  const file = data.get("key");
-  const key = await readFileToString(file);
+async function onSecretKeySubmit(event) {
+  event.preventDefault();
 
-  localStorage.setItem(STORAGE_KEY, key);
-});
+  const formData = new FormData(secretKeyForm);
+  const file = formData.get("secretKey");
+  const fileContent = await readFileToString(file);
+  const [keyOne, keyTwo] = fileContent.split("\n");
 
-function readFileToString(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+  sessionStorage.setItem(SECRET_KEY_ONE_KEY, keyOne);
+  sessionStorage.setItem(SECRET_KEY_TWO_KEY, keyTwo);
 
-    reader.onload = function (evt) {
-      if (evt.target.readyState != 2) return;
-      if (evt.target.error) {
-        reject("Error while reading file");
-        return;
-      }
-
-      resolve(evt.target.result);
-    };
-
-    reader.readAsText(file);
-  });
+  window.location.replace("/");
 }
 
-function generateKey() {
-  return window.crypto.subtle.generateKey(
-    {
-      name: "AES-CTR",
-      length: 256,
+const loginForm = document.getElementById("loginForm");
+loginForm.addEventListener("submit", onLoginSubmit);
+
+async function onLoginSubmit(event) {
+  event.preventDefault();
+
+  const formData = new FormData(loginForm);
+  const resp = await fetch("/api/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-    true,
-    ["encrypt", "decrypt"]
-  );
-}
-
-function exportKey(key) {
-  return window.crypto.subtle.exportKey(
-    "raw", //can be "jwk" or "raw"
-    key //extractable must be true
-  );
-}
-
-function downloadKey(key) {
-  const a = document.createElement("a");
-  const blob = new Blob([ab2Base64(key)], {
-    type: "text/plain",
+    body: JSON.stringify(Object.fromEntries(formData.entries())),
   });
-  a.href = window.URL.createObjectURL(blob);
-  a.download = "mypass_main_key";
-  a.click();
+  if (!resp.ok) {
+    alert("Failed to login");
+    return;
+  }
+
+  const data = await resp.json();
+  if (!data.jwt) {
+    console.error("missing jwt in response");
+    alert("Failed to login");
+    return;
+  }
+
+  sessionStorage.setItem(JWT_KEY, data.jwt);
+  renderSecretKeyForm();
+}
+
+function renderSecretKeyForm() {
+  loginForm.setAttribute("hidden", "");
+  secretKeyForm.removeAttribute("hidden");
 }

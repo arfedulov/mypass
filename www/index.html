@@ -4,26 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mypass</title>
+    <link rel="stylesheet" href="bulma.css" />
   </head>
   <body>
-    <h1>mypass</h1>
-    <!--
-        TODO:
-         If not logged in (should have jwt and secret key in session storage),
-         redirect to login page.
+    <div class="container p-4">
+      <h1 class="is-size-3 has-text-weight-light my-4">
+        <span class="has-text-weight-bold">mypass</span>
+        secrets
+      </h1>
 
-         Show a list of secrets;
-         Each secret has readable name and unfoldable description.
-         Name and description are searchable.
+      <nav class="my-4">
+        <a href="add-secret">Add secret</a>
+      </nav>
 
-         Values are shown as dots (like password).
-         Value's visibility can be toggled.
+      <h2 class="has-text-weight-bold mb-2">available tags</h2>
+      <p id="availableTags"></p>
 
-         Values are encrypted. Decryption happens
-         only on toggle visibility. It happens on client side
-         using a key from session storage.
+      <form id="filterForm" class="my-4">
+        <div class="field">
+          <label for="filterBy" class="label">Filter</label>
+          <div class="control">
+            <input id="filterBy" class="input" type="search" name="filterBy" />
+          </div>
+        </div>
+        <div class="control">
+          <button class="button">Apply</button>
+        </div>
+      </form>
 
-         The page contains "Add secret" link to add-secret page
-    -->
+      <ul id="secretsList" class="my-4"></ul>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>

@@ -1,0 +1,27 @@
+services:
+  mypass-nginx:
+    image: mypass-nginx
+    build:
+      dockerfile: ./nginx.Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /data/certbot/letsencrypt:/etc/letsencrypt
+      - /data/certbot/www:/var/www/certbot
+  mypass-database:
+    image: mongo:6.0.4
+    restart: always
+    volumes:
+      - /persistence/mypass/mongo:/data/db
+    ports:
+      - "127.0.0.1:9002:27017"
+  mypass-express:
+    image: mypass-express
+    build:
+      dockerfile: ./express.Dockerfile
+    environment:
+      - JWT_SECRET=$JWT_SECRET
+      - DATABASE_URL=$DATABASE_URL
+    depends_on:
+      - "mypass-database"

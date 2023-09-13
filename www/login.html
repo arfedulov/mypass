@@ -3,22 +3,74 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mypass login</title>
+    <title>mypass — Login</title>
+    <link rel="stylesheet" href="bulma.css" />
   </head>
   <body>
-    <h1>mypass login</h1>
-    <!--
-        TODO:
-        Take username and password.
-        Request server for session jwt.
-        Get jwt and save to session storage.
+    <div class="container p-4">
+      <h1 class="is-size-3 has-text-weight-light my-4">
+        <span class="has-text-weight-bold">mypass</span> login
+      </h1>
 
+      <div class="level">
+        <form id="loginForm">
+          <div class="field">
+            <label for="username" class="label">Username</label>
+            <div class="control">
+              <input
+                id="username"
+                class="input"
+                type="text"
+                name="username"
+                required
+              />
+            </div>
+          </div>
 
-        After login allow either upload main key to local storage
-        vie file or generate a key and download the file and then
-        use can select an option of uploading a key via just downloaded file.
+          <div class="field">
+            <label for="password" class="label">Password</label>
+            <div class="control">
+              <input
+                class="input"
+                id="password"
+                type="password"
+                name="pwd"
+                required
+              />
+            </div>
+          </div>
 
-        Redirect to index page.
-    -->
+          <div class="control">
+            <button class="button is-link">Login</button>
+          </div>
+        </form>
+
+        <form id="secretKeyForm" hidden>
+          <div class="file">
+            <label class="file-label">
+              <input
+                class="file-input"
+                type="file"
+                name="secretKey"
+                accept=".secret"
+                required
+              />
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label"> Choose secret key file… </span>
+              </span>
+            </label>
+          </div>
+
+          <div class="control my-2">
+            <button class="button is-link">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script type="module" src="js/login.js"></script>
   </body>
 </html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mypass — Generate key</title>
+    <link rel="stylesheet" href="bulma.css" />
+  </head>
+  <body>
+    <div class="container p-4">
+      <h1 class="is-size-3 has-text-weight-light my-4">
+        <span class="has-text-weight-bold">mypass</span> generate key
+      </h1>
+
+      <article class="message is-warning">
+        <div class="message-header">
+          <p>Warning</p>
+        </div>
+        <div class="message-body">
+          Save this file in a <strong>safe</strong> place.
+          <strong>Do not share it with anyone</strong>. If you loose the file,
+          you loose all the data that was encrypted by this key.
+        </div>
+      </article>
+
+      <button id="downloadButton" class="button is-link my-4">
+        generate new secret key
+      </button>
+    </div>
+
+    <script type="module" src="js/generateSecretKey.js"></script>
+  </body>
+</html>

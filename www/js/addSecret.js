@@ -1,17 +1,66 @@
-import { str2ab } from "./lib";
+import {
+  isLoggedIn,
+  encryptData,
+  importKeys,
+  JWT_KEY,
+  ab2Base64,
+} from "./lib.js";
 
-function encryptValue(value, key) {
-  const data = str2ab(value);
+if (!isLoggedIn()) {
+  window.location.replace("/login");
+}
 
-  return window.crypto.subtle.encrypt(
-    {
-      name: "AES-CTR",
-      //Don't re-use counters!
-      //Always use a new counter every time your encrypt!
-      counter: new Uint8Array(16),
-      length: 128, //can be 1-128
-    },
-    key, //from generateKey or importKey above
-    data //ArrayBuffer of data you want to encrypt
+const addSecretForm = document.getElementById("addSecretForm");
+addSecretForm.addEventListener("submit", onAddSecretFormSubmit);
+
+const formError = document.getElementById("formError");
+
+async function onAddSecretFormSubmit(event) {
+  event.preventDefault();
+  clearFormError();
+
+  const formData = new FormData(addSecretForm);
+  const secretName = formData.get("secretName");
+  const secretValue = formData.get("secretValue");
+  const secretDescription = formData.get("secretDescription");
+
+  const { keyOne, keyTwo } = await importKeys();
+  const secretNameEncrypted = ab2Base64(await encryptData(secretName, keyOne));
+  const secretValueEncrypted = ab2Base64(
+    await encryptData(secretValue, keyTwo)
   );
+  const secretDescriptionEncrypted = ab2Base64(
+    await encryptData(secretDescription, keyOne)
+  );
+
+  const transportableData = {
+    secretNameEncrypted,
+    secretValueEncrypted,
+    secretDescriptionEncrypted,
+  };
+
+  const resp = await fetch("/api/add-secret", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${sessionStorage.getItem(JWT_KEY)}`,
+    },
+    body: JSON.stringify(transportableData),
+  });
+
+  if (!resp.ok) {
+    setFormError("Failed adding a secret");
+    return;
+  }
+
+  window.location.assign("/");
+}
+
+function setFormError(err) {
+  formError.querySelector("[data-error-body]").innerText = err;
+  formError.removeAttribute("hidden");
+}
+function clearFormError() {
+  formError.querySelector("[data-error-body]").innerText = "";
+  formError.setAttribute("hidden", "");
 }

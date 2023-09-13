@@ -1,0 +1,11 @@
+[Unit]
+Description=mypass app
+
+[Service]
+User=root
+WorkingDirectory=/app/mypass
+ExecStart=/bin/bash -c 'cd /app/mypass && docker compose up'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
